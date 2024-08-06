@@ -631,6 +631,7 @@ class ForumTab extends SliderSuperTabEventable {
     });
 
     this.listenerSetter.add(rootScope)('chat_update', (chatId) => {
+      console.log("======chat_update", chatId);
       if(this.peerId !== chatId.toPeerId(true)) {
         return;
       }

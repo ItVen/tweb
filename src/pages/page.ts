@@ -17,7 +17,14 @@ export default class Page {
     private onMount?: (...args: any[]) => Promise<any> | void,
     public onShown?: () => void
   ) {
-    this.pageEl = document.body.querySelector('.' + className) as HTMLDivElement;
+    if (!this.pageEl) {
+      this.pageEl = document.createElement("div");
+      this.pageEl.className = className;
+      document.body.appendChild(this.pageEl);
+    }
+    this.pageEl = document.body.querySelector(
+      '.' + className
+    ) as HTMLDivElement;
   }
 
   public async mount(...args: any[]) {
@@ -46,5 +53,9 @@ export default class Page {
     }
 
     pagesManager.setPage(this);
+  }
+
+  public addElement(element: HTMLElement) {
+    this.pageEl.append(element);
   }
 }

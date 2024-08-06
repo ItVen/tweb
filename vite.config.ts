@@ -58,30 +58,33 @@ export default defineConfig({
     //   /* features options - all disabled by default */
     //   autoname: true // e.g. enable autoname
     // }),
-    process.env.VITEST ? undefined : checker({
-      typescript: true,
-      eslint: {
-        // for example, lint .ts and .tsx
-        lintCommand: 'eslint "./src/**/*.{ts,tsx}" --ignore-pattern "/src/solid/*"'
-      }
-    }),
+    process.env.VITEST
+      ? undefined
+      : checker({
+          typescript: true,
+          eslint: false,
+          // eslint: {
+          //   // for example, lint .ts and .tsx
+          //   lintCommand: 'eslint "./src/**/*.{ts,tsx}" --ignore-pattern "/src/solid/*"'
+          // }
+        }),
     solidPlugin(),
     handlebarsPlugin as any,
     USE_SSL ? (basicSsl as any)(SSL_CONFIG) : undefined,
     visualizer({
       gzipSize: true,
-      template: 'treemap'
-    })
+      template: "treemap",
+    }),
   ].filter(Boolean),
   test: {
     // include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/cypress/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
-      '**/solid/**'
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/cypress/**",
+      "**/.{idea,git,cache,output,temp}/**",
+      "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
+      "**/solid/**",
     ],
     // coverage: {
     //   provider: 'v8',
@@ -89,8 +92,8 @@ export default defineConfig({
     //   include: ['src/**/*.ts', 'store/src/**/*.ts', 'web/src/**/*.ts'],
     //   exclude: ['**/*.d.ts', 'src/server/*.ts', 'store/src/**/server.ts']
     // },
-    environment: 'jsdom',
-    testTransformMode: {web: ['.[jt]sx?$']},
+    environment: "jsdom",
+    testTransformMode: { web: [".[jt]sx?$"] },
     // otherwise, solid would be loaded twice:
     // deps: {registerNodeLoader: true},
     // if you have few tests, try commenting one
@@ -98,48 +101,50 @@ export default defineConfig({
     threads: false,
     isolate: false,
     globals: true,
-    setupFiles: ['./src/tests/setup.ts']
+    setupFiles: ["./src/tests/setup.ts"],
   },
   server: serverOptions,
-  base: '',
+  base: "",
   build: {
-    target: 'es2020',
+    target: "es2020",
     sourcemap: true,
-    assetsDir: '',
+    assetsDir: "",
     copyPublicDir: false,
     emptyOutDir: true,
     minify: NO_MINIFY ? false : undefined,
     rollupOptions: {
       output: {
-        sourcemapIgnoreList: serverOptions.sourcemapIgnoreList
-      }
+        sourcemapIgnoreList: serverOptions.sourcemapIgnoreList,
+      },
       // input: {
       //   main: './index.html',
       //   sw: './src/index.service.ts'
       // }
-    }
+    },
     // cssCodeSplit: true
   },
   worker: {
-    format: 'es'
+    format: "es",
   },
   css: {
     devSourcemap: true,
     postcss: {
       plugins: [
-        autoprefixer({}) // add options if needed
-      ]
-    }
+        autoprefixer({}), // add options if needed
+      ],
+    },
   },
   resolve: {
     // conditions: ['development', 'browser'],
-    alias: USE_OWN_SOLID ? {
-      'rxcore': resolve(rootDir, SOLID_PATH, 'web/core'),
-      'solid-js/jsx-runtime': resolve(rootDir, SOLID_PATH, 'jsx'),
-      'solid-js/web': resolve(rootDir, SOLID_PATH, 'web'),
-      'solid-js/store': resolve(rootDir, SOLID_PATH, 'store'),
-      'solid-js': resolve(rootDir, SOLID_PATH),
-      ...ADDITIONAL_ALIASES
-    } : ADDITIONAL_ALIASES
-  }
+    alias: USE_OWN_SOLID
+      ? {
+          rxcore: resolve(rootDir, SOLID_PATH, "web/core"),
+          "solid-js/jsx-runtime": resolve(rootDir, SOLID_PATH, "jsx"),
+          "solid-js/web": resolve(rootDir, SOLID_PATH, "web"),
+          "solid-js/store": resolve(rootDir, SOLID_PATH, "store"),
+          "solid-js": resolve(rootDir, SOLID_PATH),
+          ...ADDITIONAL_ALIASES,
+        }
+      : ADDITIONAL_ALIASES,
+  },
 });

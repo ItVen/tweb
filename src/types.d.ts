@@ -94,46 +94,57 @@ export type PickByType<T, Value> = {
   [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
 };
 
-export type AuthState = AuthState.signIn | AuthState.signQr | AuthState.authCode | AuthState.password | AuthState.signUp | AuthState.signedIn | AuthState.signImport;
+export type AuthState =
+  | AuthState.signIn
+  | AuthState.botDemo
+  | AuthState.signQr
+  | AuthState.authCode
+  | AuthState.password
+  | AuthState.signUp
+  | AuthState.signedIn
+  | AuthState.signImport;
 export namespace AuthState {
   export type signIn = {
-    _: 'authStateSignIn'
+    _: 'authStateSignIn';
   };
 
   export type signQr = {
-    _: 'authStateSignQr'
+    _: 'authStateSignQr';
   };
 
   export type authCode = {
-    _: 'authStateAuthCode',
-    sentCode: AuthSentCode.authSentCode
+    _: 'authStateAuthCode';
+    sentCode: AuthSentCode.authSentCode;
   };
 
   export type password = {
-    _: 'authStatePassword'
+    _: 'authStatePassword';
   };
 
   export type signUp = {
-    _: 'authStateSignUp',
+    _: 'authStateSignUp';
     authCode: {
-      phone_number: string,
-      phone_code_hash: string
-    }
+      phone_number: string;
+      phone_code_hash: string;
+    };
   };
 
   export type signedIn = {
-    _: 'authStateSignedIn'
+    _: 'authStateSignedIn';
+  };
+  export type botDemo = {
+    _: 'botDemo';
   };
 
   export type signImport = {
-    _: 'authStateSignImport',
+    _: 'authStateSignImport';
     data: {
-      token: string,
-      userId: UserId,
-      dcId: DcId,
-      isTest: boolean,
-      tgAddr: string
-    }
+      token: string;
+      userId: UserId;
+      dcId: DcId;
+      isTest: boolean;
+      tgAddr: string;
+    };
   };
 }
 

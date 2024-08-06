@@ -358,52 +358,67 @@ IMAGE_MIME_TYPES_SUPPORTED_PROMISE.then((mimeTypes) => {
   }
 
   let authState = stateResult.state.authState;
-
   const hash = location.hash;
-  const splitted = hash.split('?');
+  console.log("hash", hash, authState);
+  if (hash === "#botDemo") {
+    rootScope.managers.appStateManager.pushToState(
+      "authState",
+      (authState = { _: "botDemo" })
+    );
+  }
+  console.log("authState:", `${authState._}  hash is ${hash}`);
+  const splitted = hash.split("?");
   const params = parseUriParamsLine(splitted[1] ?? splitted[0].slice(1));
-  if(params.tgWebAuthToken && authState._ !== 'authStateSignedIn') {
-    const data: AuthState.signImport['data'] = {
+  if (params.tgWebAuthToken && authState._ !== "authStateSignedIn") {
+    const data: AuthState.signImport["data"] = {
       token: params.tgWebAuthToken,
       dcId: +params.tgWebAuthDcId,
       userId: params.tgWebAuthUserId.toUserId(),
       isTest: params.tgWebAuthTest !== undefined && !!+params.tgWebAuthTest,
-      tgAddr: params.tgaddr
+      tgAddr: params.tgaddr,
     };
 
-    if(data.isTest !== Modes.test) {
+    if (data.isTest !== Modes.test) {
       const urlSearchParams = new URLSearchParams(location.search);
-      if(+params.tgWebAuthTest) {
-        urlSearchParams.set('test', '1');
+      if (+params.tgWebAuthTest) {
+        urlSearchParams.set("test", "1");
       } else {
-        urlSearchParams.delete('test');
+        urlSearchParams.delete("test");
       }
 
       location.search = urlSearchParams.toString();
       return;
     }
 
-    rootScope.managers.appStateManager.pushToState('authState', authState = {_: 'authStateSignImport', data});
+    rootScope.managers.appStateManager.pushToState(
+      "authState",
+      (authState = { _: "authStateSignImport", data })
+    );
 
     // appNavigationController.overrideHash('?tgaddr=' + encodeURIComponent(params.tgaddr));
   }
 
-  if(authState._ !== 'authStateSignedIn'/*  || 1 === 1 */) {
-    console.log('Will mount auth page:', authState._, Date.now() / 1000);
+  if (authState._ !== "authStateSignedIn" && authState._ !== "botDemo") {
+    console.log(
+      "Will mount auth page:",
+      authState._,
+      Date.now() / 1000,
+      `${authState._}`
+    );
 
-    const el = document.getElementById('auth-pages');
+    const el = document.getElementById("auth-pages");
     let scrollable: HTMLElement;
-    if(el) {
-      scrollable = el.querySelector('.scrollable') as HTMLElement;
-      if((!IS_TOUCH_SUPPORTED || IS_MOBILE_SAFARI)) {
-        scrollable.classList.add('no-scrollbar');
+    if (el) {
+      scrollable = el.querySelector(".scrollable") as HTMLElement;
+      if (!IS_TOUCH_SUPPORTED || IS_MOBILE_SAFARI) {
+        scrollable.classList.add("no-scrollbar");
       }
 
       // * don't remove this line
-      scrollable.style.opacity = '0';
+      scrollable.style.opacity = "0";
 
-      const placeholder = document.createElement('div');
-      placeholder.classList.add('auth-placeholder');
+      const placeholder = document.createElement("div");
+      placeholder.classList.add("auth-placeholder");
 
       scrollable.prepend(placeholder);
       scrollable.append(placeholder.cloneNode());
@@ -411,52 +426,54 @@ IMAGE_MIME_TYPES_SUPPORTED_PROMISE.then((mimeTypes) => {
 
     try {
       await Promise.all([
-        import('./lib/mtproto/telegramMeWebManager'),
-        import('./lib/mtproto/webPushApiManager')
+        import("./lib/mtproto/telegramMeWebManager"),
+        import("./lib/mtproto/webPushApiManager"),
       ]).then(([meModule, pushModule]) => {
         meModule.default.setAuthorized(false);
         pushModule.default.forceUnsubscribe();
       });
-    } catch(err) {
-
-    }
+    } catch (err) {}
 
     let pagePromise: Promise<void>;
     // langPromise.then(async() => {
-    switch(authState._) {
-      case 'authStateSignIn':
-        pagePromise = (await import('./pages/pageSignIn')).default.mount();
+    switch (authState._) {
+      case "authStateSignIn":
+        pagePromise = (await import("./pages/pageSignIn")).default.mount();
         break;
-      case 'authStateSignQr':
-        pagePromise = (await import('./pages/pageSignQR')).default.mount();
+      case "authStateSignQr":
+        pagePromise = (await import("./pages/pageSignQR")).default.mount();
         break;
-      case 'authStateAuthCode':
-        pagePromise = (await import('./pages/pageAuthCode')).default.mount(authState.sentCode);
+      case "authStateAuthCode":
+        pagePromise = (await import("./pages/pageAuthCode")).default.mount(
+          authState.sentCode
+        );
         break;
-      case 'authStatePassword':
-        pagePromise = (await import('./pages/pagePassword')).default.mount();
+      case "authStatePassword":
+        pagePromise = (await import("./pages/pagePassword")).default.mount();
         break;
-      case 'authStateSignUp':
-        pagePromise = (await import('./pages/pageSignUp')).default.mount(authState.authCode);
+      case "authStateSignUp":
+        pagePromise = (await import("./pages/pageSignUp")).default.mount(
+          authState.authCode
+        );
         break;
-      case 'authStateSignImport':
-        pagePromise = (await import('./pages/pageSignImport')).default.mount(authState.data);
+      case "authStateSignImport":
+        pagePromise = (await import("./pages/pageSignImport")).default.mount(
+          authState.data
+        );
         break;
     }
     // });
 
-    if(scrollable) {
+    if (scrollable) {
       // wait for text appear
-      if(pagePromise) {
+      if (pagePromise) {
         await pagePromise;
       }
 
-      const promise = 'fonts' in document ?
-        Promise.race([
-          pause(1000),
-          document.fonts.ready
-        ]) :
-        Promise.resolve();
+      const promise =
+        "fonts" in document
+          ? Promise.race([pause(1000), document.fonts.ready])
+          : Promise.resolve();
       fadeInWhenFontsReady(scrollable, promise);
     }
 
@@ -486,9 +503,16 @@ IMAGE_MIME_TYPES_SUPPORTED_PROMISE.then((mimeTypes) => {
         "phone_number": ""
       });
     }, 500); */
+  } else if (authState._ == "botDemo") {
+    console.log(
+      "Will mount bot demo page:",
+      Date.now() / 1000,
+      `${authState._}`
+    );
+    (await import("./pages/botPage")).default.mount();
   } else {
-    console.log('Will mount IM page:', Date.now() / 1000);
-    fadeInWhenFontsReady(document.getElementById('main-columns'), loadFonts());
-    (await import('./pages/pageIm')).default.mount();
+    console.log("Will mount IM page:", Date.now() / 1000, `${authState._}`);
+    fadeInWhenFontsReady(document.getElementById("main-columns"), loadFonts());
+    (await import("./pages/pageIm")).default.mount();
   }
 });

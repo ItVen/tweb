@@ -11,33 +11,56 @@ import rootScope from '../lib/rootScope';
 import Page from './page';
 
 const onFirstMount = () => {
-  rootScope.managers.appStateManager.pushToState('authState', {_: 'authStateSignedIn'});
+  rootScope.managers.appStateManager.pushToState("authState", {
+    _: "authStateSignedIn",
+  });
   // ! TOO SLOW
   /* appStateManager.saveState(); */
 
-  if(!I18n.requestedServerLanguage) {
+  if (!I18n.requestedServerLanguage) {
     I18n.getCacheLangPack().then((langPack) => {
-      if(langPack.local) {
+      if (langPack.local) {
         I18n.getLangPack(langPack.lang_code);
       }
     });
   }
 
-  page.pageEl.style.display = '';
+  page.pageEl.style.display = "";
 
   blurActiveElement();
 
   return Promise.all([
-    import('../lib/appManagers/appDialogsManager'),
-    loadFonts()/* .then(() => new Promise((resolve) => window.requestAnimationFrame(resolve))) */,
-    'requestVideoFrameCallback' in HTMLVideoElement.prototype ? Promise.resolve() : import('../helpers/dom/requestVideoFrameCallbackPolyfill')
+    import("../lib/appManagers/appDialogsManager"),
+    loadFonts() /* .then(() => new Promise((resolve) => window.requestAnimationFrame(resolve))) */,
+    "requestVideoFrameCallback" in HTMLVideoElement.prototype
+      ? Promise.resolve()
+      : import("../helpers/dom/requestVideoFrameCallbackPolyfill"),
   ]).then(([appDialogsManager]) => {
     appDialogsManager.default.start();
     setTimeout(() => {
-      document.getElementById('auth-pages').remove();
+      document.getElementById("auth-pages").remove();
     }, 1e3);
   });
 };
 
-const page = new Page('page-chats', false, onFirstMount);
+const page = new Page("page-chats", false, onFirstMount);
+
+const buttonContainer = document.createElement("div");
+buttonContainer.className = "bot-button-container";
+
+const button = document.createElement("button");
+button.textContent = "Go to BotDemo Page";
+button.className = "bot-custom-button";
+button.addEventListener("click", async () => {
+  window.location.hash = "#botDemo";
+  rootScope.managers.appStateManager.pushToState("authState", {
+    _: "botDemo",
+  });
+  (await import("./botPage")).default.mount();
+  // window.location.reload();
+});
+
+buttonContainer.appendChild(button);
+page.addElement(buttonContainer);
+
 export default page;

@@ -23,6 +23,8 @@ export default class AppBotsManager extends AppManager {
         bot: this.appUsersManager.getUserInput(botId)
       },
       processResult: (updates) => {
+        console.log(updates);
+        console.log("==============");
         this.apiUpdatesManager.processUpdateMessage(updates);
       }
     });
